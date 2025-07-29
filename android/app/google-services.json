@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "202282189120",
+    "project_id": "microtasker-df05b",
+    "storage_bucket": "microtasker-df05b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202282189120:android:89535454dc9cceac91faa5",
+        "android_client_info": {
+          "package_name": "com.aryansh.microtaskmanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvXL-XVgXDMsRL0At-pOONGBaLndrgK0k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

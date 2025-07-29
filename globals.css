@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.text-shadow {
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
+}
+
+.text-neon-blue {
+  color: #06b6d4;
+}
+
+.text-neon-cyan {
+  color: #22d3ee;
+}
+
+.text-neon-white {
+  color: #f9fafb;
+}
+
+.text-neon-purple {
+  color: #9333ea;
+}
+
+.shadow-neon {
+  shadow-color: #00ffcc;
+  shadow-offset: 0px 0px;
+  shadow-opacity: 0.8;
+  shadow-radius: 15px;
+}
