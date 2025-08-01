@@ -1,15 +1,17 @@
+import { GetSecretKey } from "@/utils/GetSecretKey";
 
 export const AIProjectSuggestionServices = async (projects: {
   name: string;
   description: string;
 }) => {
   try {
+    const keys = await GetSecretKey();
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mixtral-8x7b-instruct-v0.1',
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer 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`,
+          Authorization: `Bearer ${keys.HUGGINGFACE_API_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
