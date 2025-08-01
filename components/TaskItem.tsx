@@ -9,6 +9,9 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/services/Firebase';
 import { StartTaskServices } from '@/services/StartTaskServices';
 import { EndTaskService } from '@/services/EndTaskService';
+import { InvoiceAndMailServices } from '@/services/InvoiceAndMailServices';
+import { useRouter } from 'expo-router';
+import { GetInvoiceIdServices } from '@/services/GetInvoiceIdServices';
 
 export default function TaskItem({
   task,
@@ -24,7 +27,9 @@ export default function TaskItem({
     'In Progress' | 'Completed' | null
   >(null);
   const [isLoading, setLoading] = useState(false);
-
+  const router = useRouter();
+  const [generatePdf, setGeneratePdf] = useState(false);
+  const [invoiceId, setInvoiceId] = useState<string | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,8 +56,8 @@ export default function TaskItem({
               const serverElapsedTime = Math.floor(
                 (getTime - startTime) / 1000
               );
-              
-              let totaltime = data.time_taken || 0
+
+              let totaltime = data.time_taken || 0;
               totaltime += serverElapsedTime;
 
               setElapsedTime(totaltime);
@@ -96,7 +101,7 @@ export default function TaskItem({
         );
         setElapsedTime(storedTime ? parseInt(storedTime, 10) : 0);
         setIsTimerRunning(true);
-        await AsyncStorage.removeItem('action')
+        await AsyncStorage.removeItem('action');
       } else {
         await StartTaskServices(task.id, task.project_id);
         setIsTimerRunning(true);
@@ -155,7 +160,10 @@ export default function TaskItem({
       if (taskData.status === 'Completed') {
         await AsyncStorage.removeItem(`task_${task.id}_elapsedTime`);
       } else {
-        await AsyncStorage.setItem(`task_${task.id}_elapsedTime`, elapsedTime.toString())
+        await AsyncStorage.setItem(
+          `task_${task.id}_elapsedTime`,
+          elapsedTime.toString()
+        );
       }
     } catch (error) {
       console.error('Error in end task:', error);
@@ -218,6 +226,78 @@ export default function TaskItem({
         return '#f59e0b';
       default:
         return '#3b82f6';
+    }
+  };
+
+  useEffect(() => {
+    const getDownloadUrl = async () => {
+      const url = await GetInvoiceIdServices(task.project_id, task.id)
+      if (url) {
+        setGeneratePdf(true)
+      }
+    }
+
+    getDownloadUrl();
+  }, [])
+
+  const handleGenerateInvoice = async () => {
+    setLoading(true);
+    try {
+      const result = await InvoiceAndMailServices(task.project_id, task.id);
+
+      const data = await GetInvoiceIdServices(
+        task.project_id,
+        task.id,
+      );
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: result.message,
+      });
+
+      setInvoiceId(result?.invoice_id);
+      setGeneratePdf(true);
+
+      setTimeout(() => {
+        router.push(`/invoice/${data}`);
+      }, 4000);
+    } catch (error: any) {
+      console.error('Error in generating invoice:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: `Failed to generate invoice: ${error.message || 'Unknown error'}`,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleShowInvoice = async () => {
+    setLoading(true);
+    try {
+      const data = await GetInvoiceIdServices(
+        task.project_id,
+        task.id,
+      );
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Show Invoice Successfully',
+      });
+
+      setTimeout(() => {
+        router.push(`/invoice/${data}`);
+      }, 4000);
+    } catch (error: any) {
+      console.error('Error in Showing invoice:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: `Failed to generate invoice: ${error.message || 'Unknown error'}`,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -371,17 +451,30 @@ export default function TaskItem({
                   {selectedStatus === 'In Progress' ? 'Pause' : 'End Task'}
                 </Button>
               )}
-              {taskData.status === 'Completed' && (
-                <Button
-                  mode="contained"
-                  buttonColor="#10b981"
-                  textColor="#1a1f3a"
-                  style={styles.actionButton}
-                  rippleColor="rgba(16, 185, 129, 0.2)"
-                >
-                  Generate Invoice
-                </Button>
-              )}
+              {taskData.status === 'Completed' &&
+                (generatePdf ? (
+                  <Button
+                    mode="contained"
+                    buttonColor="#3b82f6"
+                    onPress={handleShowInvoice}
+                    textColor="#ffffff"
+                    style={styles.actionButton}
+                    rippleColor="rgba(59, 130, 246, 0.2)"
+                  >
+                    {isLoading ? 'Opening Invoice...' : 'Show Invoice'}
+                  </Button>
+                ) : (
+                  <Button
+                    mode="contained"
+                    buttonColor="#10b981"
+                    onPress={handleGenerateInvoice}
+                    textColor="#1a1f3a"
+                    style={styles.actionButton}
+                    rippleColor="rgba(16, 185, 129, 0.2)"
+                  >
+                    {isLoading ? 'Generating Invoice...' : 'Generate Invoice'}
+                  </Button>
+                ))}
             </Card.Actions>
           </Card>
         </TouchableOpacity>

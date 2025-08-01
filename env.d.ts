@@ -14,4 +14,6 @@ declare module '@env' {
   export const FIREBASE_SENDER_ID: string;
   export const FIREBASE_APP_ID: string;
   export const FIREBASE_MEASUREMENT_APP_ID: string;
+  export const EMAIL_ADDRESS: string;
+  export const EMAIL_PASSWORD: string;
 }

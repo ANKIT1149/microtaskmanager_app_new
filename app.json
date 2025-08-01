@@ -8,6 +8,10 @@
     scheme: "microtaskmanagerapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
+    "permissions": [
+      "android.permission.WRITE_EXTERNAL_STORAGE",
+      "android.permission.READ_EXTERNAL_STORAGE"
+    ],
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.aryansh.microtaskmanager"

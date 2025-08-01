@@ -184,7 +184,7 @@ export default function ProjectItem({
             textColor="#1a1f3a"
             onPress={handleAddProject}
             rippleColor="rgba(0, 255, 204, 0.2)"
-            className="w-[300px] mr-[100px] font-serif font-bold text-black"
+            className="w-[300px] mr-[20px] font-serif font-bold text-black"
           >
             Add Task
           </Button>

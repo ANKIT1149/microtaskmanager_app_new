@@ -1,35 +1,49 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { MotiView, MotiText, MotiImage } from 'moti';
 import '../../globals.css';
-import { CheckUser } from '@/services/CheckUser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator, Button } from 'react-native-paper';
+import tw from 'twrnc';
 
 const { width, height } = Dimensions.get('window');
 
 export default function LandingPage() {
   const router = useRouter();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkUserId = async () => {
-      const userId = await AsyncStorage.getItem("userId");
-
-      if (userId) {
-        router.push('/client');
+      try {
+        const id = await AsyncStorage.getItem('userId');
+        setUserId(id);
+      } catch (error: any) {
+        console.error('Error checking userId:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     checkUserId();
   }, []);
+
+  if (loading) {
+    return (
+      <View style={tw`flex-1 bg-[#1a1f3a] justify-center items-center`}>
+        <ActivityIndicator size="large" color="#00ffcc" />
+      </View>
+    );
+  }
+
   return (
     <LinearGradient
       colors={['#0a0e1a', '#1a1f3a', '#2a3a5a']}
       className="flex-1"
     >
       <View className="flex-1 justify-between items-center px-6 py-12">
-        {/* Futuristic Logo and Title */}
         <MotiView
           from={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -64,7 +78,7 @@ export default function LandingPage() {
           </MotiText>
         </MotiView>
 
-        {/* Animated Description */}
+        {/* Description */}
         <MotiText
           from={{ opacity: 0, translateY: 50 }}
           animate={{ opacity: 0.9, translateY: 0 }}
@@ -80,7 +94,7 @@ export default function LandingPage() {
           invoices, and manage clients—all from your digital hub.
         </MotiText>
 
-        {/* Dynamic Logo Animation */}
+        {/* Animated Image */}
         <MotiImage
           from={{ opacity: 0, scale: 0.9, rotate: '-10deg' }}
           animate={{ opacity: 1, scale: 1, rotate: '10deg' }}
@@ -96,54 +110,104 @@ export default function LandingPage() {
           resizeMode="contain"
         />
 
-        {/* Interactive CTA Section */}
+        {/* Buttons (Conditional) */}
         <MotiView
           from={{ opacity: 0, translateY: 60 }}
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ delay: 1100, type: 'spring', damping: 15 }}
           className="items-center space-y-6 mb-12 w-full"
         >
-          <TouchableOpacity
-            onPress={() => router.push('/(auth)/register')}
-            className="rounded-full overflow-hidden shadow-neon"
-          >
-            <LinearGradient
-              colors={['#00ffcc', '#00ccff', '#cc00ff']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              className="px-10 py-5 rounded-full"
-            >
-              <MotiText
-                from={{ scale: 1 }}
-                animate={{ scale: 1.05 }}
-                transition={{
-                  type: 'timing',
-                  duration: 1000,
-                  loop: true,
-                  repeatReverse: true,
-                }}
-                className="text-white font-bold text-lg tracking-wider text-center font-serif italic"
+          {userId ? (
+            <>
+              <Button
+                mode="contained"
+                buttonColor="#00ffcc"
+                textColor="#1a1f3a"
+                style={tw`w-3/4 rounded-full mb-10 font-serif`}
+                onPress={() => router.push(`/dashboard/${userId}`)}
+                contentStyle={tw`py-2`}
               >
-                🌌 Join the Future
-              </MotiText>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-            <MotiText
-              from={{ opacity: 0, translateY: 10 }}
-              animate={{ opacity: 0.8, translateY: 0 }}
-              transition={{ delay: 1300, type: 'timing', duration: 700 }}
-              className="text-neon-purple underline font-medium mt-8"
-              style={{
-                textShadowColor: 'rgba(147, 51, 234, 0.4)',
-                textShadowOffset: { width: 0, height: 0 },
-                textShadowRadius: 5,
-              }}
-            >
-              Already a Pioneer? Log In
-            </MotiText>
-          </TouchableOpacity>
+                <MotiText
+                  from={{ scale: 1 }}
+                  animate={{ scale: 1.05 }}
+                  transition={{
+                    type: 'timing',
+                    duration: 1000,
+                    loop: true,
+                    repeatReverse: true,
+                  }}
+                  className="text-xl font-bold font-serif italic"
+                >
+                  Visit Dashboard
+                </MotiText>
+              </Button>
+              <Button
+                mode="contained"
+                buttonColor="#00ccff"
+                textColor="#1a1f3a"
+                style={tw`w-3/4 rounded-full`}
+                onPress={() => router.push('/client')}
+                contentStyle={tw`py-2`}
+              >
+                <MotiText
+                  from={{ scale: 1 }}
+                  animate={{ scale: 1.05 }}
+                  transition={{
+                    type: 'timing',
+                    duration: 1000,
+                    loop: true,
+                    repeatReverse: true,
+                  }}
+                  className="text-lg font-bold font-serif italic"
+                >
+                  Manage Clients
+                </MotiText>
+              </Button>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                onPress={() => router.push('/(auth)/register')}
+                className="rounded-full overflow-hidden shadow-neon"
+              >
+                <LinearGradient
+                  colors={['#00ffcc', '#00ccff', '#cc00ff']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  className="px-10 py-5 rounded-full"
+                >
+                  <MotiText
+                    from={{ scale: 1 }}
+                    animate={{ scale: 1.05 }}
+                    transition={{
+                      type: 'timing',
+                      duration: 1000,
+                      loop: true,
+                      repeatReverse: true,
+                    }}
+                    className="text-white font-bold text-lg tracking-wider text-center font-serif italic"
+                  >
+                    🌌 Join the Future
+                  </MotiText>
+                </LinearGradient>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
+                <MotiText
+                  from={{ opacity: 0, translateY: 10 }}
+                  animate={{ opacity: 0.8, translateY: 0 }}
+                  transition={{ delay: 1300, type: 'timing', duration: 700 }}
+                  className="text-neon-purple underline font-medium mt-8"
+                  style={{
+                    textShadowColor: 'rgba(147, 51, 234, 0.4)',
+                    textShadowOffset: { width: 0, height: 0 },
+                    textShadowRadius: 5,
+                  }}
+                >
+                  Already a Pioneer? Log In
+                </MotiText>
+              </TouchableOpacity>
+            </>
+          )}
         </MotiView>
       </View>
     </LinearGradient>

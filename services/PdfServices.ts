@@ -1,12 +1,17 @@
-import RNHTMLtoPDF from 'react-native-html-to-pdf'
+import * as Print from 'expo-print'
+import * as FileSystem from 'expo-file-system'
 
 export const PdfServices = async (filename: string, html: string): Promise<string> => {
-    const option = {
-        html,
-        filename,
-        directory: 'Documents'
-    }
+    console.log(`recive html: ${html}`)
+    const { uri } = await Print.printToFileAsync({html})
+    
+    const newPath = `${FileSystem.documentDirectory}${filename}.pdf`
 
-    const file = await RNHTMLtoPDF.convert(option)
-    return file.filePath
+    await FileSystem.moveAsync({
+        from: uri,
+        to: newPath
+    })
+
+    return newPath
+
 }

@@ -17,7 +17,7 @@ type Project = {
   name: string;
 };
 
-export default function TaskPage() {
+const TaskPage =() => {
   const { projectId = '', projectName = '' } = useLocalSearchParams();
   type Task = {
     id: string;
@@ -201,3 +201,5 @@ const styles = StyleSheet.create({
   headerTextLight: { color: '#1a1f3a' },
   header: { padding: 16, alignItems: 'center' },
 });
+
+export default TaskPage

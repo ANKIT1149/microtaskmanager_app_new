@@ -13,6 +13,7 @@ import { TextInput, Button, HelperText } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { registerUser } from '@/services/RegisterUser';
 import { Login } from '@/services/LoginUser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type FormData = {
   email: string;
@@ -39,7 +40,8 @@ export default function LoginPage() {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      await Login(data.email, data.password);
+      const user: any =  await Login(data.email, data.password);
+      await AsyncStorage.setItem("userId", user.id)
       router.push('/(tabs)');
     } catch (err: any) {
       Alert.alert(
