@@ -1,38 +1,42 @@
 import React from 'react';
-import { ScrollView,StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import { MotiView } from 'moti';
 import TaskItem from './TaskItem';
-import { Card } from 'react-native-paper';
+import { Card, Portal } from 'react-native-paper';
 import { TaskListProps } from '@/Interface/TaskListProps';
 
 export default function TaskList({ tasks, onEdit, onDelete }: TaskListProps) {
   return (
-    <MotiView
-      from={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ type: 'timing', duration: 300 }}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {tasks.length === 0 ? (
-          <Card style={styles.emptyCard}>
-            <Card.Content>
-              <Text style={styles.emptyText}>No tasks found. Add a task to get started!</Text>
-            </Card.Content>
-          </Card>
-        ) : (
-          tasks.map((task, index) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              animationDelay={index * 100}
-            />
-          ))
-        )}
-      </ScrollView>
-    </MotiView>
+    <Portal.Host>
+      <MotiView
+        from={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ type: 'timing', duration: 300 }}
+        style={styles.container}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {tasks.length === 0 ? (
+            <Card style={styles.emptyCard}>
+              <Card.Content>
+                <Text style={styles.emptyText}>
+                  No tasks found. Add a task to get started!
+                </Text>
+              </Card.Content>
+            </Card>
+          ) : (
+            tasks.map((task, index) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                animationDelay={index * 100}
+              />
+            ))
+          )}
+        </ScrollView>
+      </MotiView>
+    </Portal.Host>
   );
 }
 

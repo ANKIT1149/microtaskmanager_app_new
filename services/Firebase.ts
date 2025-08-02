@@ -5,28 +5,18 @@ import {
   getReactNativePersistence,
 } from 'firebase/auth/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GetSecretKey } from '@/utils/GetSecretKey';
 
-let firebaseConfig = {};
-(async () => {
-  const keys = await GetSecretKey();
-  try {
-    firebaseConfig = {
-      apiKey: keys.FIREBASE_API_KEY,
-      authDomain: keys.FIREBASE_AUTH_DOMAIN,
-      projectId:  keys.FIREBASE_PROJECT_ID,
-      storageBucket: keys.FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: keys.FIREBASE_SENDER_ID,
-      appId: keys.FIREBASE_APP_ID,
-      measurementId: keys.FIREBASE_MEASUREMENT_APP_ID,
-    };
-  } catch (error) {
-    console.error('Failed to fetch Firebase keys:', error);
-  }
-})();
+const firebaseConfig = {
+  apiKey: 'AIzaSyDCbkhS8qKDueG2VLjPYFbpsp3glp6SoTc',
+  authDomain: 'microtasker-df05b.firebaseapp.com',
+  projectId: 'microtasker-df05b',
+  storageBucket: 'microtasker-df05b.firebasestorage.app',
+  messagingSenderId: '202282189120',
+  appId: '1:202282189120:web:ed48450dd5970c1891faa5',
+  measurementId: 'G-0JEGJ8L02H',
+};
 
 const app = initializeApp(firebaseConfig);
-
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage),
 });

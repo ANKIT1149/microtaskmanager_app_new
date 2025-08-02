@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { ActivityIndicator, Avatar, Button, Card } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import { FontAwesome } from '@expo/vector-icons';
 import tw from 'twrnc';
 import { GetUserServices } from '@/services/GetUserServices';
 import { GetQoutaServices } from '@/services/GetQoutaServices';
-import { getClientServices } from '@/services/GetClientServices';
 import { ProjectServices } from '@/services/ProjectsServices';
 import { FetchtaskSize, GetTaskProgressServices } from '@/services/TaskServices';
 import { UserData } from '@/Interface/UserInfoProps';
@@ -30,7 +29,8 @@ export default function DashboardScreen() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
+  useFocusEffect(
+  React.useCallback(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -64,7 +64,8 @@ export default function DashboardScreen() {
     };
 
     fetchData();
-  }, []);
+  }, [])
+);
 
   const handleLogout = async () => {
     try {
@@ -193,7 +194,7 @@ export default function DashboardScreen() {
                 <Button
                   mode="outlined"
                   textColor="#00ffcc"
-                  style={tw`border-[#00ffcc]`}
+                  style={tw`border-[#00ffcc] mr-5`}
                   onPress={() => router.push(`/task`)}
                 >
                   Check Task
@@ -217,7 +218,7 @@ export default function DashboardScreen() {
         buttonColor=""
         textColor="#ffffff"
         style={tw`mb-4 py-2`}
-        onPress={handleDeleteAccount}
+        onPress={() => router.push('/client')}
       >
         Manage Clients
       </Button>

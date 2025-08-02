@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { MotiView } from 'moti';
-import { FAB, Text } from 'react-native-paper';
+import { FAB, Text, Button } from 'react-native-paper';
 import { useLocalSearchParams } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { GetProjectService } from '@/services/GetProjectServices';
@@ -11,13 +11,15 @@ import { CreateTaskService } from '@/services/CreateTaskServices';
 import { DeleteTaskService } from '@/services/DeleteTaskServices';
 import TaskForm from '@/components/TaskForm';
 import TaskList from '@/components/TaskList';
+import { Ionicons } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
 
 type Project = {
   id: string;
   name: string;
 };
 
-const TaskPage =() => {
+const TaskPage = () => {
   const { projectId = '', projectName = '' } = useLocalSearchParams();
   type Task = {
     id: string;
@@ -35,10 +37,13 @@ const TaskPage =() => {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
 
   useEffect(() => {
     fetchProjects();
-    fetchTasks();
+    if (projectId) {
+      fetchTasks();
+    }
   }, [projectId]);
 
   const fetchProjects = async () => {
@@ -62,13 +67,14 @@ const TaskPage =() => {
     }
   };
 
-  const fetchTasks = async () => {
+  const fetchTasks = async (overrideProjectId?: string) => {
     try {
       setIsLoading(true);
-      const projectIds = projectId ? [projectId] : projects.map(p => p.id);
-      console.log('Fetching tasks for project IDs:', projectIds);
+      const projectIds = overrideProjectId || projectId || selectedProjectId;
+      if (!projectIds) return;
       
-      const taskData = await getTaskService(projectIds);
+      console.log('Fetching tasks for project ID:', projectIds);
+      const taskData = await getTaskService([projectIds]);
       setTasks(
         Array.isArray(taskData)
           ? taskData.map((task: any) => ({
@@ -98,7 +104,10 @@ const TaskPage =() => {
   const handleSubmit = async (task: any) => {
     try {
       if (editingTask) {
-        await UpdateTaskService(task.project_id, editingTask?.id, task);
+         console.log('editingTask:', editingTask);
+        console.log('Updating task...');
+        console.log("tasks", task, task.id)
+        await UpdateTaskService(editingTask.id, task.project_id, task);
       } else {
         await CreateTaskService(task);
       }
@@ -129,6 +138,12 @@ const TaskPage =() => {
     setEditingTask(null);
   };
 
+  const handleProjectSelectSubmit = () => {
+    if (selectedProjectId) {
+      fetchTasks(selectedProjectId);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <MotiView
@@ -151,16 +166,47 @@ const TaskPage =() => {
             Tasks
           </Text>
         </MotiView>
-        {isFormVisible ? (
-          <TaskForm
-            editingTask={editingTask}
-            onSubmit={handleSubmit}
-            onClose={handleCloseForm}
-            projects={projects}
-          />
+        
+        {!projectId && (
+          <View style={styles.projectSelectContainer}>
+            <Text style={styles.selectLabel}>Select a Project</Text>
+            <Picker
+              selectedValue={selectedProjectId}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedProjectId(itemValue)}
+            >
+              <Picker.Item label="Select a project" value="" />
+              {projects.map((project) => (
+                <Picker.Item key={project.id} label={project.name} value={project.id} />
+              ))}
+            </Picker>
+            <Button
+              mode="contained"
+              onPress={handleProjectSelectSubmit}
+              disabled={!selectedProjectId || isLoading}
+              style={styles.submitButton}
+            >
+              View Tasks
+            </Button>
+          </View>
+        )}
+
+          {isFormVisible ? (
+          <ScrollView>
+            <TouchableOpacity onPress={() => setIsFormVisible(false)}>
+              <Ionicons name="close-circle-outline" size={32} color="#ff6666" className='absolute right-5 bottom-5'/>
+            </TouchableOpacity>
+            <TaskForm
+              editingTask={editingTask}
+              onSubmit={handleSubmit}
+              onClose={handleCloseForm}
+              projects={projects}
+            />
+          </ScrollView>
         ) : (
           <TaskList tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} />
         )}
+
         {!isFormVisible && (
           <FAB
             style={styles.fab}
@@ -200,6 +246,26 @@ const styles = StyleSheet.create({
   headerTextDark: { color: '#00ffcc' },
   headerTextLight: { color: '#1a1f3a' },
   header: { padding: 16, alignItems: 'center' },
+  projectSelectContainer: {
+    padding: 16,
+    backgroundColor: '#2a2f4a',
+    borderRadius: 8,
+    margin: 16,
+  },
+  selectLabel: {
+    color: '#00ffcc',
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  picker: {
+    backgroundColor: '#ffffff',
+    borderRadius: 4,
+    marginBottom: 16,
+  },
+  submitButton: {
+    backgroundColor: '#00ffcc',
+    color: '#1a1f3a',
+  },
 });
 
 export default TaskPage

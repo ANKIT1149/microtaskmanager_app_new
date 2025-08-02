@@ -13,16 +13,10 @@ export const GetQoutaServices = async (): Promise<QoutaData> => {
         const qoutaRef = doc(db, `users/${userId}/qouta`, 'usage')
         const qoutaSnap = await getDoc(qoutaRef)
 
-        if (!qoutaSnap.exists()) {
-            throw new Error("Qouta Snap Exsists")
-        }
-
-        const data = qoutaSnap.data()
-
         const qoutaData = {
-            ai_count: data.ai_count,
-            email_count: data.email_count,
-            isSubscribed: data.isSubscribed
+            ai_count: qoutaSnap.data()?.ai_count,
+            email_count: qoutaSnap.data()?.email_count,
+            isSubscribed: qoutaSnap.data()?.isSubscribed
         }
 
         return qoutaData

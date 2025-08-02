@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { MotiText, MotiView } from 'moti';
-import { Text, Button, Card, Menu, Provider } from 'react-native-paper';
+import { Text, Button, Card, Menu, Provider, Portal } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import { TaskItemProps } from '@/Interface/TaskITemProps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -231,24 +231,21 @@ export default function TaskItem({
 
   useEffect(() => {
     const getDownloadUrl = async () => {
-      const url = await GetInvoiceIdServices(task.project_id, task.id)
+      const url = await GetInvoiceIdServices(task.project_id, task.id);
       if (url) {
-        setGeneratePdf(true)
+        setGeneratePdf(true);
       }
-    }
+    };
 
     getDownloadUrl();
-  }, [])
+  }, []);
 
   const handleGenerateInvoice = async () => {
     setLoading(true);
     try {
       const result = await InvoiceAndMailServices(task.project_id, task.id);
 
-      const data = await GetInvoiceIdServices(
-        task.project_id,
-        task.id,
-      );
+      const data = await GetInvoiceIdServices(task.project_id, task.id);
       Toast.show({
         type: 'success',
         text1: 'Success',
@@ -276,10 +273,7 @@ export default function TaskItem({
   const handleShowInvoice = async () => {
     setLoading(true);
     try {
-      const data = await GetInvoiceIdServices(
-        task.project_id,
-        task.id,
-      );
+      const data = await GetInvoiceIdServices(task.project_id, task.id);
       Toast.show({
         type: 'success',
         text1: 'Success',
@@ -309,7 +303,11 @@ export default function TaskItem({
         transition={{ type: 'spring', damping: 15, delay: animationDelay }}
         style={styles.cardContainer}
       >
-        <TouchableOpacity onPress={() => onEdit(taskData)}>
+        <TouchableOpacity
+          onPress={() =>
+            taskData.status === 'Completed' ? '' : onEdit(taskData)
+          }
+        >
           <Card style={styles.card}>
             <Card.Content>
               <MotiText
@@ -363,43 +361,46 @@ export default function TaskItem({
                 </MotiText>
               )}
               {isTimerRunning && (
-                <Menu
-                  visible={isMenuVisible}
-                  onDismiss={() => setIsMenuVisible(false)}
-                  anchor={
-                    <Button
-                      mode="outlined"
-                      textColor="#00ffcc"
-                      style={styles.actionButton}
-                      onPress={() => setIsMenuVisible(true)}
-                      className="mt-8"
-                    >
-                      Select Action
-                    </Button>
-                  }
-                >
-                  <Menu.Item
-                    onPress={async () => {
-                      setSelectedStatus('In Progress');
-                      setIsMenuVisible(false);
-                      await AsyncStorage.setItem(`action`, 'Pause');
-                    }}
-                    title="Pause"
-                  />
-                  <Menu.Item
-                    onPress={() => {
-                      setSelectedStatus('Completed');
-                      setIsMenuVisible(false);
-                    }}
-                    title="Complete"
-                  />
-                </Menu>
+                <View>
+                  <Menu
+                    visible={isMenuVisible}
+                    onDismiss={() => setIsMenuVisible(false)}
+                    anchor={
+                      <Button
+                        mode="outlined"
+                        textColor="#00ffcc"
+                        style={styles.actionButton}
+                        onPress={() => setIsMenuVisible(true)}
+                        className='mt-8'
+                      >
+                        Select Action
+                      </Button>
+                    }
+                  >
+                    <Menu.Item
+                      onPress={async () => {
+                        setSelectedStatus('In Progress');
+                        setIsMenuVisible(false);
+                        await AsyncStorage.setItem(`action`, 'Pause');
+                      }}
+                      title="Pause"
+                    />
+                    <Menu.Item
+                      onPress={() => {
+                        setSelectedStatus('Completed');
+                        setIsMenuVisible(false);
+                      }}
+                      title="Complete"
+                    />
+                  </Menu>
+                </View>
               )}
             </Card.Content>
             <Card.Actions>
               <Button
                 mode="outlined"
                 buttonColor="#00ffcc"
+                disabled={taskData.status === 'Completed'}
                 textColor="#1a1f3a"
                 onPress={() => onEdit(taskData)}
                 style={styles.editButton}
@@ -413,6 +414,7 @@ export default function TaskItem({
                 textColor="#ff6666"
                 onPress={handleDelete}
                 style={styles.editButton}
+                disabled={taskData.status === 'Completed'}
                 rippleColor="rgba(255, 102, 102, 0.2)"
                 className="mt-5"
               >

@@ -38,7 +38,7 @@ export default function RootLayout() {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="+not-found" />
-        </Stack>
+          </Stack>
           <Toast position="top" topOffset={60} visibilityTime={4000} autoHide={true} />
         <StatusBar style="auto" />
       </ThemeProvider>

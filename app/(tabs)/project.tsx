@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, SafeAreaView, StyleSheet } from 'react-native';
+import {
+  View,
+  ScrollView,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView } from 'moti';
 import { Text, FAB } from 'react-native-paper';
@@ -9,6 +15,7 @@ import Toast from 'react-native-toast-message';
 import { GetProjectService } from '@/services/GetProjectServices';
 import ProjectForm from '@/components/ProjectForm';
 import ProjectList from '@/components/ProjectList';
+import { Ionicons } from '@expo/vector-icons';
 
 type Project = {
   id: string;
@@ -57,7 +64,11 @@ export default function Projects() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={isDark ? ['#1a1f3a', '#2a2f5a', '#3a3f7a'] : ['#e0f7ff', '#b0e7ff', '#80d7ff']}
+        colors={
+          isDark
+            ? ['#1a1f3a', '#2a2f5a', '#3a3f7a']
+            : ['#e0f7ff', '#b0e7ff', '#80d7ff']
+        }
         style={StyleSheet.absoluteFill}
       >
         <ParticleBackground />
@@ -69,14 +80,25 @@ export default function Projects() {
         >
           <Text
             variant="headlineMedium"
-            style={[styles.headerText, isDark ? styles.headerTextDark : styles.headerTextLight]}
-            className='mt-10'
+            style={[
+              styles.headerText,
+              isDark ? styles.headerTextDark : styles.headerTextLight,
+            ]}
+            className="mt-10"
           >
             Projects
           </Text>
         </MotiView>
         {isFormVisible ? (
-          <ProjectForm editingProject={editingProject} onClose={handleCloseForm} />
+          <View>
+            <TouchableOpacity onPress={() => setIsFormVisible(false)}>
+              <Ionicons name="close-circle-outline" size={32} color="#ff6666" className='absolute right-5 bottom-5'/>
+            </TouchableOpacity>
+            <ProjectForm
+              editingProject={editingProject}
+              onClose={handleCloseForm}
+            />
+          </View>
         ) : (
           <ProjectList
             projects={projects}
@@ -100,7 +122,11 @@ export default function Projects() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { padding: 16, alignItems: 'center' },
-  headerText: { fontWeight: 'bold', textShadowColor: 'rgba(0, 255, 204, 0.5)', textShadowRadius: 8 },
+  headerText: {
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 255, 204, 0.5)',
+    textShadowRadius: 8,
+  },
   headerTextDark: { color: '#00ffcc' },
   headerTextLight: { color: '#1a1f3a' },
   scrollContent: { padding: 16, paddingBottom: 80 },
@@ -111,6 +137,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderRadius: 50,
   },
-  fabDark: { backgroundColor: '#00ffcc', borderColor: '#00ccff', borderWidth: 1 },
-  fabLight: { backgroundColor: '#00ccff', borderColor: '#00ffcc', borderWidth: 1 },
+  fabDark: {
+    backgroundColor: '#00ffcc',
+    borderColor: '#00ccff',
+    borderWidth: 1,
+  },
+  fabLight: {
+    backgroundColor: '#00ccff',
+    borderColor: '#00ffcc',
+    borderWidth: 1,
+  },
 });

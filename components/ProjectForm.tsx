@@ -31,7 +31,7 @@ export default function ProjectForm({ editingProject, onClose }: any) {
   const [formClientName, setFormClientName] = useState(clientName || '');
   const [status, setStatus] = useState<'Pending' | 'In Progress' | 'Completed'>('Pending');
   const [priority, setPriority] = useState<'Low' | 'Medium' | 'High'>('Low');
-  const [hourlyRate, setHourlyRate] = useState(''); // Store as string for TextInput
+  const [hourlyRate, setHourlyRate] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
   type Client = { id: string; name: string };
   const [clients, setClients] = useState<Client[]>([]);

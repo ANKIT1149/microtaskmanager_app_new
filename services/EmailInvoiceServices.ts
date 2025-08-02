@@ -7,7 +7,7 @@ export const EmailInvoiceServices = async ({to, subject, body, attachment}: Emai
   }
   
   try {
-    const res = await axios.post(`http://192.168.155.173:8000/sendmail`, { to, subject, body, attachment })
+    const res = await axios.post(`https://microtask-backend.onrender.com/sendmail`, { to, subject, body, attachment })
     
     if (res.status === 200) {
       console.log("SuccessFully Sent Mail to client and User")

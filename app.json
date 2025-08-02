@@ -1,48 +1,54 @@
 {
-  expo: {
-    name: "microtaskmanager_App",
-    slug: "microtaskmanager_App",
-    version: "1.0.0",
-    orientation: "portrait",
-    icon: "./assets/images/icon.png",
-    scheme: "microtaskmanagerapp",
-    userInterfaceStyle: "automatic",
-    newArchEnabled: true,
+  "expo": {
+    "name": "microtaskmanager_App",
+    "slug": "microtaskmanager_App",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "microtaskmanagerapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
     "permissions": [
       "android.permission.WRITE_EXTERNAL_STORAGE",
       "android.permission.READ_EXTERNAL_STORAGE"
     ],
-    ios: {
-      supportsTablet: true,
-      bundleIdentifier: "com.aryansh.microtaskmanager"
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aryansh.microtaskmanager"
     },
-    android: {
-      adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
-        backgroundColor: "#ffffff"
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
       },
-      edgeToEdgeEnabled: true,
-      package: "com.aryansh.microtaskmanager"
+      "edgeToEdgeEnabled": true,
+      "package": "com.aryansh.microtaskmanager"
     },
-    web: {
-      bundler: "metro",
-      output: "static",
-      favicon: "./assets/images/favicon.png"
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
     },
-    plugins: [
+    "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          image: "./assets/images/splash-icon.png",
-          imageWidth: 200,
-          resizeMode: "contain",
-          backgroundColor: "#ffffff"
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
         }
       ]
     ],
-    experiments: {
-      typedRoutes: true
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "59f49b88-2c51-4b70-a702-ca45d456e594"
+      }
     }
   }
 }

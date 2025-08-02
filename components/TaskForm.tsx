@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform, ScrollView } from 'react-native';
 import { MotiView } from 'moti';
 import { TextInput, Button, HelperText, Text } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
@@ -117,172 +117,183 @@ export default function TaskForm({
   };
 
   return (
-    <MotiView
-      from={{ opacity: 0, translateY: 50, scale: 0.95 }}
-      animate={{ opacity: 1, translateY: 0, scale: 1 }}
-      transition={{ type: 'spring', damping: 15, delay: 200 }}
-      style={styles.formContainer}
+    <ScrollView
+      style={{ flex: 1,}} // Add background for visibility
+      contentContainerStyle={{
+        padding: 16,
+        paddingBottom: 100,
+      }}
+      keyboardShouldPersistTaps="handled"
     >
       <MotiView
-        from={{ opacity: 0, translateY: -20 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: 'timing', duration: 600 }}
-        style={styles.header}
+        from={{ opacity: 0, translateY: 50, scale: 0.95 }}
+        animate={{ opacity: 1, translateY: 0, scale: 1 }}
+        transition={{ type: 'spring', damping: 15, delay: 200 }}
+        style={styles.formContainer}
       >
-        <Text
-          variant="headlineMedium"
-          style={[styles.headerText, styles.headerTextDark]}
-          className="mt-10"
-        >
-         Add Task
-        </Text>
-      </MotiView>
-      <TextInput
-        label="Task Name"
-        value={name}
-        onChangeText={setName}
-        mode="outlined"
-        style={styles.input}
-        outlineColor="#4b5563"
-        activeOutlineColor="#00ffcc"
-        textColor="#fff"
-        maxLength={100}
-        placeholder="Enter task name"
-      />
-      <TextInput
-        label="Description"
-        value={description}
-        onChangeText={setDescription}
-        mode="outlined"
-        style={styles.input}
-        multiline
-        numberOfLines={4}
-        outlineColor="#4b5563"
-        activeOutlineColor="#00ffcc"
-        textColor="#e5e7eb"
-        maxLength={500}
-        placeholder="Describe the task"
-      />
-      <Picker
-        selectedValue={formProjectId}
-        onValueChange={(value: string) => {
-          setFormProjectId(value);
-          setFormProjectName(projects.find((p) => p.id === value)?.name || '');
-        }}
-        style={styles.picker}
-        enabled={!projectId}
-      >
-        <Picker.Item label={formProjectName || 'Select Project'} value="" />
-        {projects.map((project) => (
-          <Picker.Item
-            key={project.id}
-            label={project.name}
-            value={project.id}
-          />
-        ))}
-      </Picker>
-      <Picker
-        selectedValue={status}
-        onValueChange={setStatus}
-        style={styles.picker}
-      >
-        <Picker.Item label="Pending" value="Pending" />
-        <Picker.Item label="In Progress" value="In Progress" />
-        <Picker.Item label="Completed" value="Completed" />
-      </Picker>
-      <Picker
-        selectedValue={priority}
-        onValueChange={setPriority}
-        style={styles.picker}
-      >
-        <Picker.Item label="Low" value="Low" />
-        <Picker.Item label="Medium" value="Medium" />
-        <Picker.Item label="High" value="High" />
-      </Picker>
-      <Button
-        mode="outlined"
-        onPress={() => setShowDatePicker(true)}
-        style={styles.dateButton}
-        textColor="#00ffcc"
-        disabled={isSubmitting}
-      >
-        Due Date: {dueDate ? dueDate.toLocaleDateString() : 'Not set'}
-      </Button>
-      {showDatePicker && (
-        <DateTimePicker
-          value={dueDate || new Date()}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'inline' : 'default'}
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(Platform.OS === 'ios');
-            if (selectedDate) {
-              setDueDate(selectedDate);
-            }
-          }}
-          minimumDate={new Date()}
-          textColor="#e5e7eb"
-        />
-      )}
-      {error ? (
         <MotiView
-          from={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ type: 'timing', duration: 300 }}
+          from={{ opacity: 0, translateY: -20 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: 'timing', duration: 600 }}
+          style={styles.header}
         >
-          <HelperText type="error">{error}</HelperText>
+          <Text
+            variant="headlineMedium"
+            style={[styles.headerText, styles.headerTextDark]}
+            className="mt-10"
+          >
+            Add Task
+          </Text>
         </MotiView>
-      ) : null}
-      <MotiView
-        animate={{ scale: isSubmitting ? 0.95 : 1 }}
-        transition={{ type: 'spring', damping: 20 }}
-      >
-        <Button
-          mode="contained"
-          buttonColor="#00ffcc"
-          textColor="#1a1f3a"
-          onPress={handleSubmit}
-          disabled={isSubmitting}
-          style={styles.button}
-          rippleColor="rgba(0, 255,204, 0.2)"
-          loading={isSubmitting}
+        <TextInput
+          label="Task Name"
+          value={name}
+          onChangeText={setName}
+          mode="outlined"
+          style={styles.input}
+          outlineColor="#4b5563"
+          activeOutlineColor="#00ffcc"
+          textColor="#fff"
+          maxLength={100}
+          placeholder="Enter task name"
+        />
+        <TextInput
+          label="Description"
+          value={description}
+          onChangeText={setDescription}
+          mode="outlined"
+          style={styles.input}
+          multiline
+          numberOfLines={4}
+          outlineColor="#4b5563"
+          activeOutlineColor="#00ffcc"
+          textColor="#e5e7eb"
+          maxLength={500}
+          placeholder="Describe the task"
+        />
+        <Picker
+          selectedValue={formProjectId}
+          onValueChange={(value: string) => {
+            setFormProjectId(value);
+            setFormProjectName(
+              projects.find((p) => p.id === value)?.name || ''
+            );
+          }}
+          style={styles.picker}
+          enabled={!projectId}
         >
-          {editingTask ? 'Update Task' : 'Add Task'}
+          <Picker.Item label={formProjectName || 'Select Project'} value="" />
+          {projects.map((project) => (
+            <Picker.Item
+              key={project.id}
+              label={project.name}
+              value={project.id}
+            />
+          ))}
+        </Picker>
+        <Picker
+          selectedValue={status}
+          onValueChange={setStatus}
+          style={styles.picker}
+        >
+          <Picker.Item label="Pending" value="Pending" />
+          <Picker.Item label="In Progress" value="In Progress" />
+          <Picker.Item label="Completed" value="Completed" />
+        </Picker>
+        <Picker
+          selectedValue={priority}
+          onValueChange={setPriority}
+          style={styles.picker}
+        >
+          <Picker.Item label="Low" value="Low" />
+          <Picker.Item label="Medium" value="Medium" />
+          <Picker.Item label="High" value="High" />
+        </Picker>
+        <Button
+          mode="outlined"
+          onPress={() => setShowDatePicker(true)}
+          style={styles.dateButton}
+          textColor="#00ffcc"
+          disabled={isSubmitting}
+        >
+          Due Date: {dueDate ? dueDate.toLocaleDateString() : 'Not set'}
         </Button>
-      </MotiView>
-      {editingTask ? (
+        {showDatePicker && (
+          <DateTimePicker
+            value={dueDate || new Date()}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'inline' : 'default'}
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(Platform.OS === 'ios');
+              if (selectedDate) {
+                setDueDate(selectedDate);
+              }
+            }}
+            minimumDate={new Date()}
+            textColor="#e5e7eb"
+          />
+        )}
+        {error ? (
+          <MotiView
+            from={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ type: 'timing', duration: 300 }}
+          >
+            <HelperText type="error">{error}</HelperText>
+          </MotiView>
+        ) : null}
         <MotiView
           animate={{ scale: isSubmitting ? 0.95 : 1 }}
           transition={{ type: 'spring', damping: 20 }}
         >
           <Button
-            mode="outlined"
-            textColor="#ff6666"
-            onPress={onClose}
+            mode="contained"
+            buttonColor="#00ffcc"
+            textColor="#1a1f3a"
+            onPress={handleSubmit}
             disabled={isSubmitting}
             style={styles.button}
-            rippleColor="rgba(255, 102, 102, 0.2)"
+            rippleColor="rgba(0, 255,204, 0.2)"
+            loading={isSubmitting}
           >
-            Cancel
+            {editingTask ? 'Update Task' : 'Add Task'}
           </Button>
         </MotiView>
-      ) : null}
-    </MotiView>
+        {editingTask ? (
+          <MotiView
+            animate={{ scale: isSubmitting ? 0.95 : 1 }}
+            transition={{ type: 'spring', damping: 20 }}
+          >
+            <Button
+              mode="outlined"
+              textColor="#ff6666"
+              onPress={onClose}
+              disabled={isSubmitting}
+              style={styles.button}
+              rippleColor="rgba(255, 102, 102, 0.2)"
+            >
+              Cancel
+            </Button>
+          </MotiView>
+        ) : null}
+      </MotiView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   formContainer: {
-    margin: 16,
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: 'rgba(30, 30, 50, 0.7)',
-    borderWidth: 1,
-    borderColor: 'rgba(0, 255, 204, 0.2)',
-    shadowColor: '#00ffcc',
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
+  padding: 16,
+  borderRadius: 16,
+  backgroundColor: 'rgba(30, 30, 50, 0.95)', // Increased opacity
+  borderWidth: 1,
+  borderColor: 'rgba(0, 255, 204, 0.3)',
+  shadowColor: '#00ffcc',
+  shadowOpacity: 0.3,
+  shadowRadius: 8,
+  elevation: 5,
+  marginBottom: 40, // Helps spacing at the end
+},
   input: {
     marginBottom: 16,
     backgroundColor: 'transparent',
